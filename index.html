@@ -6,7 +6,7 @@
     <title>AI Chat Interface</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <style>
-       body {
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -105,7 +105,6 @@
                 background-position: 0% 50%;
             }
         }
-
         .modal {
             display: none;
             position: fixed;
@@ -115,9 +114,8 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0, 0, 0, 0.4);
         }
-
         .modal-content {
             background-color: #fefefe;
             margin: 15% auto;
@@ -126,48 +124,56 @@
             width: 640px;
             height: 480px;
             border-radius: 10px;
-            display: flex;
+             display: flex;
             flex-direction: column;
-            justify-content: center; /* Center content vertically */
             align-items: center;
         }
-
-        .modal-content input {
-            margin: 10px 0;
+        .modal-input {
+            margin: 20px 0;
+            width: 70%;
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+             border-radius: 5px;
+            border: 1px solid #ddd;
+             font-size: 1.2em;
         }
-        .modal-content button {
-            padding: 10px 15px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            
+         .modal-input:focus {
+          outline: none;
+        border-color: #007bff; /* Change color on focus */
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle glow */
         }
-         .modal-content button:hover {
-             background-color: #0056b3;
-         }
-
-
+      .modal-label {
+          margin-bottom:10px;
+      }
+        
+        #modalClose {
+        background-color: #f0f0f0;
+        border: none;
+        cursor: pointer;
+        color:#777;
+         font-size:1.2em;
+         padding:10px 10px;
+          border-radius: 5px;
+           transition: background-color 0.3s;
+      }
+      #modalClose:hover {
+       background-color: #ddd;
+      }
+       #modalClose:focus {
+      outline: none;
+      }
     </style>
-     <link rel="icon" href="https://nat-peac1.github.io/llama33/5b9c40cd.%E0%B8%A3%E0%B8%B9%E0%B8%9B1.154535.png">
+     <link rel="icon" href="https://nat-peac1.github.io/llama33/5b9c40cd.%E0%B8%A3%E0%B8%B9%E0%B8%9B1.154535.png" type="image/png">
 </head>
 <body>
-     <div class="gradient-background"></div>
-
-   <div id="myModal" class="modal">
+ <div id="modalDialog" class="modal">
         <div class="modal-content">
-            <label for="keyInput" >กรุณาป้อน Key : </label>
-            <input type="text" id="keyInput" placeholder="ป้อน Key ที่นี่">
-             <button id="submitKeyBtn">Submit</button>
+              <label class="modal-label" for="modalKey">กรุณาป้อน Key : </label>
+            <input type="password" id="modalKey" class="modal-input">
         </div>
     </div>
-
-
-    <div class="container" id="app-container" style="display: none;">
+    
+    <div class="gradient-background"></div>
+    <div class="container" style="display:none" id="mainContainer">
         <div id="ai-title">AI Chat Interface</div>
         <div id="xdisplay"></div>
         <textarea id="xprompt" placeholder="พิมพ์ข้อความ... (กด Enter เพื่อขึ้นบรรทัดใหม่ / กด Submit เพื่อส่ง)" rows="3"></textarea>
@@ -176,30 +182,39 @@
             <button class="button" id="clearBtn">Clear</button>
         </div>
     </div>
+
     <script>
-        const nat_key = '448101';
-        const modal = document.getElementById('myModal');
-        const keyInput = document.getElementById('keyInput');
-        const submitKeyBtn = document.getElementById('submitKeyBtn');
-        const appContainer = document.getElementById('app-container');
-
-
-        modal.style.display = "flex";
-
-       submitKeyBtn.addEventListener('click', function() {
-            const xxkey = keyInput.value;
-
-              if (xxkey === nat_key) {
-                 modal.style.display = "none";
-                 appContainer.style.display = "flex";
-
-               } else {
-                   alert('Key ไม่ถูกต้อง กรุณาลองใหม่');
-               }
+     const nat_key = '448101';
+        const modalDialog = document.getElementById('modalDialog');
+        const modalKeyInput = document.getElementById('modalKey');
+        const mainContainer = document.getElementById('mainContainer');
+    
+    
+         modalDialog.style.display = "flex";
+        
+        modalKeyInput.focus();
+        
+           modalKeyInput.addEventListener('keyup', function(event) {
+             if (event.key === 'Enter') {
+                checkKey();
+            }
         });
+        
+        function checkKey() {
+             if (modalKeyInput.value === nat_key) {
+                modalDialog.style.display = "none";
+                 mainContainer.style.display = "flex";
+                 initChat();
+            } else {
+               alert('Key ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง');
+               modalKeyInput.value = "";
+               modalKeyInput.focus();
+            }
+        }
 
 
-        const aiTitle = document.getElementById('ai-title');
+         function initChat() {
+          const aiTitle = document.getElementById('ai-title');
         const colors = ['red', 'orange', 'green', 'purple'];
         let colorIndex = 0;
         function changeColor() {
@@ -286,7 +301,7 @@
         });
 
         async function groq(message) {
-                const apikey = "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";
+                const apikey = "";
             if (apikey === ""){
                  xprompt.value = "โปรแกรมยังไม่มี APIKEY";
                  return 'โปรแกรมยังไม่มี APIKEY';
@@ -323,6 +338,7 @@
                        return "Error: " + error;
                 }
           }
+        }
     </script>
 </body>
 </html>
